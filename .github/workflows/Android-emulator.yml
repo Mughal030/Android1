@@ -28,11 +28,17 @@ jobs:
         echo "export PATH=\$ANDROID_HOME/cmdline-tools/latest/bin:\$PATH" >> $GITHUB_ENV
         echo "export PATH=\$ANDROID_HOME/platform-tools:\$PATH" >> $GITHUB_ENV
         source $GITHUB_ENV
+        export ANDROID_HOME=/usr/lib/android-sdk
+        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+        export PATH=$ANDROID_HOME/platform-tools:$PATH
 
     - name: Install SDK packages
       run: |
         yes | sdkmanager --licenses
         sdkmanager "platform-tools" "emulator" "platforms;android-30" "system-images;android-30;google_apis;x86_64"
+      env:
+        ANDROID_HOME: /usr/lib/android-sdk
+        PATH: $ANDROID_HOME/cmdline-tools/latest/bin:$PATH:$ANDROID_HOME/platform-tools
 
     - name: Create and start emulator
       run: |
