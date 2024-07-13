@@ -32,7 +32,6 @@ jobs:
 
     - name: Install SDK packages
       run: |
-        echo "Installing SDK packages..."
         export ANDROID_HOME=/usr/lib/android-sdk
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
         yes | sdkmanager --licenses
@@ -42,7 +41,7 @@ jobs:
       run: |
         export ANDROID_HOME=/usr/lib/android-sdk
         export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
-        avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
+        echo "no" | avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --device "pixel" --force
         echo "hw.gpu.mode=auto" >> ~/.android/avd/test.avd/config.ini
         echo "hw.gpu.enabled=yes" >> ~/.android/avd/test.avd/config.ini
         nohup $ANDROID_HOME/emulator/emulator -avd test -no-snapshot-load -no-window -gpu swiftshader_indirect -qemu -m 2048 > /dev/null 2>&1 &
