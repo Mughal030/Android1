@@ -1,0 +1,7 @@
+{
+  "name": "Android Emulator",
+  "image": "ubuntu:latest",
+  "runArgs": ["--privileged"],
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y wget unzip openjdk-11-jdk && wget https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip -O cmdline-tools.zip && unzip cmdline-tools.zip && sudo mkdir -p /usr/lib/android-sdk/cmdline-tools && sudo mv cmdline-tools /usr/lib/android-sdk/cmdline-tools/latest && echo 'export ANDROID_HOME=/usr/lib/android-sdk' >> ~/.bashrc && echo 'export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH' >> ~/.bashrc && echo 'export PATH=$ANDROID_HOME/platform-tools:$PATH' >> ~/.bashrc && source ~/.bashrc && yes | sdkmanager --licenses && sdkmanager 'platform-tools' 'emulator' 'platforms;android-30' 'system-images;android-30;google_apis;x86_64' && avdmanager create avd -n test -k 'system-images;android-30;google_apis;x86_64' --force && echo 'hw.gpu.mode=auto' >> ~/.android/avd/test.avd/config.ini && echo 'hw.gpu.enabled=yes' >> ~/.android/avd/test.avd/config.ini && nohup $ANDROID_HOME/emulator/emulator -avd test -no-snapshot-load -no-window -gpu swiftshader_indirect -qemu -m 2048 > /dev/null 2>&1 & && adb wait-for-device && adb install your-app.apk",
+  "forwardPorts": [5554]
+}
