@@ -19,7 +19,7 @@ jobs:
     - name: Install prerequisites
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip lib32stdc++6 lib32z1 yes
+        sudo apt-get install -y wget unzip lib32stdc++6 lib32z1
 
     - name: Download and set up Android SDK tools
       run: |
@@ -27,18 +27,13 @@ jobs:
         unzip cmdline-tools.zip -d cmdline-tools
         sudo mkdir -p /usr/lib/android-sdk/cmdline-tools/latest
         sudo mv cmdline-tools/cmdline-tools /usr/lib/android-sdk/cmdline-tools/latest
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        export PATH=$ANDROID_HOME/platform-tools:$PATH
-        echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
-        echo "PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
+        echo "export ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
+        echo "export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH" >> $GITHUB_ENV
+        echo "export PATH=$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
 
     - name: Install SDK packages
       run: |
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        export PATH=$ANDROID_HOME/platform-tools:$PATH
+        source $GITHUB_ENV
         yes | sdkmanager --licenses
         sdkmanager "platform-tools" "emulator" "platforms;android-30" "system-images;android-30;google_apis;x86_64"
       env:
@@ -47,22 +42,18 @@ jobs:
 
     - name: Create and start emulator
       run: |
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        export PATH=$ANDROID_HOME/platform-tools:$PATH
+        source $GITHUB_ENV
         avdmanager create avd -n test -k "system-images;android-30;google_apis;x86_64" --force
         echo "hw.gpu.mode=auto" >> ~/.android/avd/test.avd/config.ini
         echo "hw.gpu.enabled=yes" >> ~/.android/avd/test.avd/config.ini
         nohup $ANDROID_HOME/emulator/emulator -avd test -no-snapshot-load -no-window -gpu swiftshader_indirect -qemu -m 2048 > /dev/null 2>&1 &
       env:
-        ANDROID_HOME: /usr/lib/android-sdk
+        ANDROID_HOME: /usr.lib/android-sdk
         PATH: $ANDROID_HOME/cmdline-tools/latest/bin:$PATH:$ANDROID_HOME/platform-tools
 
     - name: Wait for emulator to start
       run: |
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        export PATH=$ANDROID_HOME/platform-tools:$PATH
+        source $GITHUB_ENV
         adb wait-for-device
       env:
         ANDROID_HOME: /usr/lib/android-sdk
@@ -70,9 +61,7 @@ jobs:
 
     - name: Install APK
       run: |
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        export PATH=$ANDROID_HOME/platform-tools:$PATH
+        source $GITHUB_ENV
         adb install your-app.apk
       env:
         APK_PATH: your-app.apk
@@ -81,9 +70,7 @@ jobs:
 
     - name: Forward port
       run: |
-        export ANDROID_HOME=/usr/lib/android-sdk
-        export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-        export PATH=$ANDROID_HOME/platform-tools:$PATH
+        source $GITHUB_ENV
         ssh -R 0.0.0.0:5554:127.0.0.1:5554 serveo.net
       env:
         ANDROID_HOME: /usr/lib/android-sdk
